@@ -1,0 +1,11 @@
+class,image_count,avg_width,avg_height,min_width,min_height,max_width,max_height,formats,corrupt_files
+drum,197,145,127,87,60,162,140,"jpeg, png",0
+violin,196,136,125,42,47,162,140,"jpeg, png",0
+sitar,195,135,123,46,43,162,140,"jpeg, png",0
+banjo,194,131,128,51,52,162,140,"jpeg, png",0
+guitar,194,138,124,56,49,162,140,"jpeg, png",0
+tabla,193,150,119,87,70,162,140,"jpeg, png",0
+harmonica,193,147,122,72,43,162,140,"jpeg, png",0
+accordion,189,150,123,71,60,162,140,"jpeg, png",0
+flute,189,150,117,60,47,162,140,"jpeg, png",0
+saxophone,174,132,128,62,45,162,140,"jpeg, png",0

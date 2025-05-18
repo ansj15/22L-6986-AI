@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musical Instrument Detector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #2d3436;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .header p {
+            color: #636e72;
+            font-size: 1.1rem;
+        }
+        .upload-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+        }
+        .upload-area {
+            border: 2px dashed #74b9ff;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: #0984e3;
+            background: #f8f9fa;
+        }
+        #preview {
+            max-width: 100%;
+            max-height: 300px;
+            margin: 1rem 0;
+            display: none;
+            border-radius: 8px;
+        }
+        .result {
+            margin-top: 1rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: #f8f9fa;
+            display: none;
+            text-align: center;
+        }
+        .result h3 {
+            color: #2d3436;
+            margin-bottom: 0.5rem;
+        }
+        .result p {
+            color: #636e72;
+        }
+        button {
+            background: #0984e3;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #074e81;
+            transform: translateY(-2px);
+        }
+        .instruments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .instrument-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .instrument-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .instrument-card img {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1rem;
+        }
+        .instrument-card h3 {
+            color: #2d3436;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        .confidence-bar {
+            height: 4px;
+            background: #dfe6e9;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        .confidence-bar .fill {
+            height: 100%;
+            background: #0984e3;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        @media (max-width: 768px) {
+            .instruments-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>Musical Instrument Detector</h1>
+            <p>Upload a photo of a musical instrument, and I'll try to identify it!</p>
+        </div>
+        
+        <div class="upload-container">
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <p>Click to upload or drag and drop an image</p>
+                <input type="file" id="fileInput" hidden accept="image/*">
+                <img id="preview" alt="Preview">
+            </div>
+            <button onclick="detectInstrument()">Detect Instrument</button>
+            <div id="result" class="result"></div>
+        </div>
+
+        <div class="instruments-grid">
+            <div class="instrument-card">
+                <img src="https://img.icons8.com/color/96/accordion.png" alt="Accordion">
+                <h3>Accordion</h3>
+                <div class="confidence-bar"><div class="fill"></div></div>
+            </div>
+            <div class="instrument-card">
+                <img src="https://img.icons8.com/color/96/banjo.png" alt="Banjo">
+                <h3>Banjo</h3>
+                <div class="confidence-bar"><div class="fill"></div></div>
+            </div>
+            <div class="instrument-card">
+                <img src="https://img.icons8.com/color/96/cello.png" alt="Cello">
+                <h3>Cello</h3>
+                <div class="confidence-bar"><div class="fill"></div></div>
+            </div>
+            <div class="instrument-card">
+                <img src="https://img.icons8.com/color/96/drums.png" alt="Drum">
+                <h3>Drum</h3>
+                <div class="confidence-bar"><div class="fill"></div></div>
+            </div>
+            <div class="instrument-card">
+                <img src="https://img.icons8.com/color/96/guitar.png" alt="Guitar">
+                <h3>Guitar</h3>
+                <div class="confidence-bar"><div class="fill"></div></div>
+            </div>
+            <div class="instrument-card">
+                <img src="https://img.icons8.com/color/96/piano.png" alt="Piano">
+                <h3>Piano</h3>
+                <div class="confidence-bar"><div class="fill"></div></div>
+            </div>
+            <div class="instrument-card">
+                <img src="https://img.icons8.com/color/96/saxophone.png" alt="Saxophone">
+                <h3>Saxophone</h3>
+                <div class="confidence-bar"><div class="fill"></div></div>
+            </div>
+            <div class="instrument-card">
+                <img src="https://img.icons8.com/color/96/trumpet.png" alt="Trumpet">
+                <h3>Trumpet</h3>
+                <div class="confidence-bar"><div class="fill"></div></div>
+            </div>
+            <div class="instrument-card">
+                <img src="https://img.icons8.com/color/96/violin.png" alt="Violin">
+                <h3>Violin</h3>
+                <div class="confidence-bar"><div class="fill"></div></div>
+            </div>
+            <div class="instrument-card">
+                <img src="https://img.icons8.com/color/96/xylophone.png" alt="Xylophone">
+                <h3>Xylophone</h3>
+                <div class="confidence-bar"><div class="fill"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const result = document.getElementById('result');
+        const instrumentCards = document.querySelectorAll('.instrument-card');
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function resetConfidenceBars() {
+            instrumentCards.forEach(card => {
+                card.querySelector('.fill').style.width = '0%';
+                card.style.opacity = '1';
+            });
+        }
+
+        async function detectInstrument() {
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select an image first');
+                return;
+            }
+
+            resetConfidenceBars();
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                result.innerHTML = `
+                    <h3>Prediction: ${data.prediction}</h3>
+                    <p>Confidence: ${(data.confidence * 100).toFixed(2)}%</p>
+                `;
+                result.style.display = 'block';
+
+                // Update confidence bars and highlight predicted instrument
+                instrumentCards.forEach(card => {
+                    const instrumentName = card.querySelector('h3').textContent;
+                    if (instrumentName === data.prediction) {
+                        card.querySelector('.fill').style.width = `${data.confidence * 100}%`;
+                        card.style.opacity = '1';
+                    } else {
+                        card.style.opacity = '0.5';
+                    }
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error detecting instrument. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html> 
